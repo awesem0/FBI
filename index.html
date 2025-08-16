@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FunBadge</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: white;
+      overflow-y: auto;
+      touch-action: auto;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px;
+      min-height: 100vh;
+      overflow-y: auto;
+      touch-action: auto;
+    }
+    .top-buttons {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      max-width: 772.98px;
+    }
+    .top-buttons a.button,
+    .top-buttons .upload-container {
+      width: 376.49px;
+      margin: 0;
+      touch-action: none;
+    }
+    .canvas-and-controls {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 100%;
+      justify-content: center;
+      gap: 20px;
+      overflow-x: hidden;
+    }
+    #canvas-container {
+      width: 360px;
+      height: 571px;
+      background-image: url('https://i.imgur.com/2arUMxB.png');
+      background-size: 360px 571px;
+      background-position: center;
+      position: relative;
+      flex-shrink: 0;
+      margin-left: 0px;
+      background-color: white;
+      touch-action: manipulation;
+    }
+    .main-container.landscape #canvas-container {
+      width: 552px;
+      height: 348px;
+      background-size: 552px 348px;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      flex-grow: 1;
+      max-width: 370.82px;
+    }
+    .main-container:not(.landscape) .controls {
+      margin-top: 76px;
+    }
+    .photo-controls, .name-controls, .download-section {
+      display: flex;
+      flex-direction: column;
+      width: 370.82px;
+    }
+    .download-section {
+      margin-top: 10px;
+    }
+    .download-section button {
+      width: 100%;
+      height: 66px;
+      touch-action: none;
+      background-color: #003087;
+    }
+    .download-section button:active {
+      background-color: #4D8CFF;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+      width: 370.82px;
+    }
+    .slider-container label {
+      width: 90px;
+      text-align: left;
+      font-size: 16px;
+    }
+    .slider-container input[type="range"] {
+      flex: 1;
+      height: 20px;
+      touch-action: pan-x;
+      width: 100%;
+    }
+    .text-input-container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin: 10px 0;
+      width: 370.82px;
+    }
+    .text-input-container input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+      border: 2px solid #000000;
+      border-radius: 5px;
+      box-sizing: border-box;
+      height: 40px;
+    }
+    button, a.button, label.upload-button {
+      margin: 0;
+      cursor: pointer;
+      background-color: #003087;
+      color: white;
+      border: 3px solid #003087;
+      border-radius: 8px;
+      height: 66px;
+      text-align: center;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    button:hover, a.button:hover, label.upload-button:hover {
+      background-color: #00205b;
+    }
+    .hidden {
+      display: none;
+    }
+    .download-container {
+      margin: 10px 0;
+      width: 100%;
+    }
+    .upload-container {
+      position: relative;
+    }
+    .upload-container input[type="file"] {
+      display: none;
+    }
+    .layer-buttons {
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+      margin: 10px 0;
+      width: 370.82px;
+    }
+    .layer-buttons button {
+      width: 182.91px;
+      padding: 0;
+      margin: 0;
+      height: 66px;
+    }
+    .color-selection {
+      display: flex;
+      flex-direction: row;
+      gap: 5px;
+      margin-left: 10px;
+    }
+    .color-button {
+      width: 40px;
+      height: 40px;
+      border: 2px solid #000000;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .color-button:hover {
+      opacity: 0.8;
+    }
+    .color-button.selected {
+      border-color: #ff0000;
+    }
+    #colorWhite {
+      background-color: white;
+    }
+    #colorBlack {
+      background-color: black;
+    }
+    #loading-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+    .disclaimer {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 10px;
+      max-width: 772.98px;
+    }
+    @media (max-width: 740px) {
+      .main-container {
+        align-items: center;
+        min-height: auto;
+      }
+      .top-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 100%;
+      }
+      .top-buttons a.button,
+      .top-buttons .upload-container {
+        width: calc(45% + 3.78px);
+        box-sizing: border-box;
+        height: 35px;
+      }
+      a.button, label.upload-button {
+        height: 35px;
+        font-size: 10px;
+        padding: 0 8px;
+      }
+      .canvas-and-controls {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      #canvas-container {
+        margin-bottom: 20px;
+        margin-left: 0;
+        max-width: 360px;
+        width: 100%;
+      }
+      .main-container.landscape #canvas-container {
+        margin-bottom: 0;
+      }
+      .controls {
+        align-items: center;
+        max-width: 100%;
+        width: 100%;
+      }
+      .main-container:not(.landscape) .controls {
+        margin-top: 20px;
+      }
+      .photo-controls, .name-controls, .download-section {
+        width: 100%;
+        max-width: 100%;
+      }
+      .slider-container {
+        width: 100%;
+      }
+      .slider-container input[type="range"] {
+        height: 20px;
+        width: 100%;
+      }
+      .text-input-container {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin: 5px 0;
+      }
+      .text-input-container input[type="text"] {
+        width: 100%;
+        font-size: 12px;
+        padding: 6px;
+        height: 30px;
+      }
+      .color-selection {
+        margin-left: 0;
+        margin-top: 5px;
+      }
+      .layer-buttons {
+        width: 100%;
+        margin: 3.2px 0;
+      }
+      .layer-buttons button {
+        width: 50%;
+        height: 35px;
+        font-size: 10px;
+      }
+      .download-section {
+        margin-top: 3.2px;
+        margin-bottom: 3.2px;
+      }
+      .download-section button {
+        height: 35px;
+        font-size: 12px;
+        width: 100%;
+      }
+      .disclaimer {
+        font-size: 12px;
+      }
+    }
+    @media (max-width: 772.98px) and (min-width: 741px) {
+      .top-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <div class="disclaimer">
+      This is a fun badge creator tool for personal use only. We do not store your data.
+    </div>
+    <div class="top-buttons">
+      <a href="https://www.etsy.com/uk/listing/1802562586/personalised-fbi-agent-7-printable" target="_blank" class="button">BUY TEMPLATE</a>
+      <a href="https://www.pixelcut.ai/t/background-remover" target="_blank" class="button">REMOVE PHOTO BACKGROUND</a>
+      <div class="upload-container">
+        <label for="templateUpload" class="upload-button">UPLOAD TEMPLATE</label>
+        <input type="file" id="templateUpload" accept="image/*">
+      </div>
+      <div class="upload-container">
+        <label for="photoUpload" class="upload-button">UPLOAD PHOTO</label>
+        <input type="file" id="photoUpload" accept="image/*">
+      </div>
+    </div>
+    <div class="canvas-and-controls">
+      <div id="canvas-container">
+        <div id="loading-message">Loading...</div>
+      </div>
+      <div class="controls">
+        <div class="photo-controls">
+          <div id="photo-sliders" class="hidden">
+            <div class="slider-container">
+              <label for="scale">Scale: </label>
+              <input type="range" id="scale" min="0.1" max="2" step="0.01" value="1.25" />
+            </div>
+            <div class="slider-container">
+              <label for="xPos">Left Right: </label>
+              <input type="range" id="xPos" min="-307" max="307" value="56.69" />
+            </div>
+            <div class="slider-container">
+              <label for="yPos">Up Down: </label>
+              <input type="range" id="yPos" min="-193.5" max="193.5" value="-18.9" />
+            </div>
+            <div class="slider-container">
+              <label for="rotation">Rotation: </label>
+              <input type="range" id="rotation" min="-10" max="10" step="0.1" value="0" />
+            </div>
+            <div class="layer-buttons">
+              <button id="sendBack">SEND TO BACK</button>
+              <button id="bringFront">BRING TO FRONT</button>
+            </div>
+          </div>
+        </div>
+        <div class="name-controls">
+          <div id="name-controls" class="hidden">
+            <div class="text-input-container">
+              <input type="text" id="text1" placeholder="Enter badge text" />
+              <div class="color-selection">
+                <button id="colorBlack" class="color-button selected"></button>
+                <button id="colorWhite" class="color-button"></button>
+              </div>
+            </div>
+            <div class="slider-container">
+              <label for="nameScale">Scale: </label>
+              <input type="range" id="nameScale" min="0.5" max="2" step="0.01" value="1" />
+            </div>
+            <div class="slider-container">
+              <label for="nameXPos">Left Right: </label>
+              <input type="range" id="nameXPos" min="-307" max="307" value="0" />
+            </div>
+            <div class="slider-container">
+              <label for="nameYPos">Up Down: </label>
+              <input type="range" id="nameYPos" min="-193.5" max="193.5" value="0" />
+            </div>
+          </div>
+        </div>
+        <div class="download-section">
+          <div class="download-container">
+            <button id="download">DOWNLOAD</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    let templateImg, photoImg;
+    let xPos = 56.69, yPos = -18.9, scaleVal = 1.25, rotationVal = 0;
+    let nameXPos = 0, nameYPos = 0, nameScaleVal = 1;
+    let nameColor = 0;
+    let photoInFront = true;
+    let templateLoaded = false, photoLoaded = false;
+    let photoAspectRatio = 1;
+    let canvasWidth = 360, canvasHeight = 571;
+    let isLandscape = false;
+    let text1 = "";
+    let isDraggingPhoto = false;
+    let photoDragStartX, photoDragStartY;
+    let hasDownloaded = false;
+    let relativeNameX = 0, relativeNameY = 0, relativeNameScale = 1;
+    let originalTemplateWidth, originalTemplateHeight;
+    let isPinching = false;
+    let initialPinchDistance = 0;
+    let initialScale = 0;
+    const loadingMessage = document.getElementById('loading-message');
+    let canvas;
+
+    let text1PosX = 360 / 2, text1PosY = (571 * 0.75) + 11, text1FontSize = 30;
+    const maxNameWidth = 300;
+    const landscapeNameScaleFactor = 0.8;
+    const landscapeNameYOffset = -29;
+    const landscapeNameXOffset = 29;
+    const signatureLowerOffset = 11;
+
+    function setup() {
+      canvas = createCanvas(canvasWidth, canvasHeight);
+      canvas.parent('canvas-container');
+      background(0, 0, 0, 0);
+      document.querySelector('#photo-sliders').classList.add('hidden');
+      document.querySelector('#name-controls').classList.add('hidden');
+      document.querySelector('.download-section').classList.add('hidden');
+      textFont('Dancing Script');
+      pixelDensity(2); // Ensure high-quality rendering
+    }
+
+    function updateCanvasSize() {
+      document.getElementById('canvas-container').style.width = `${canvasWidth}px`;
+      document.getElementById('canvas-container').style.height = `${canvasHeight}px`;
+      document.getElementById('canvas-container').style.backgroundSize = `${canvasWidth}px ${canvasHeight}px`;
+      resizeCanvas(canvasWidth, canvasHeight);
+      if (photoLoaded) {
+        document.querySelector('#photo-sliders').classList.remove('hidden');
+        document.querySelector('#name-controls').classList.remove('hidden');
+        document.querySelector('.download-section').classList.remove('hidden');
+      } else {
+        document.querySelector('#photo-sliders').classList.add('hidden');
+        document.querySelector('#name-controls').classList.add('hidden');
+        document.querySelector('.download-section').classList.add('hidden');
+      }
+      updateSliderRanges();
+      updateTextPositions();
+    }
+
+    function updateSliderRanges() {
+      const xMax = canvasWidth / 2;
+      const yMax = canvasHeight / 2;
+      const xPosSlider = document.getElementById('xPos');
+      const yPosSlider = document.getElementById('yPos');
+      const nameXPosSlider = document.getElementById('nameXPos');
+      const nameYPosSlider = document.getElementById('nameYPos');
+      if (xPosSlider) xPosSlider.setAttribute('min', -xMax);
+      if (xPosSlider) xPosSlider.setAttribute('max', xMax);
+      if (yPosSlider) yPosSlider.setAttribute('min', -yMax);
+      if (yPosSlider) yPosSlider.setAttribute('max', yMax);
+      if (nameXPosSlider) nameXPosSlider.setAttribute('min', -xMax);
+      if (nameXPosSlider) nameXPosSlider.setAttribute('max', xMax);
+      if (nameYPosSlider) nameYPosSlider.setAttribute('min', -yMax);
+      if (nameYPosSlider) nameYPosSlider.setAttribute('max', yMax);
+    }
+
+    function updateTextPositions() {
+      if (isLandscape) {
+        text1PosX = (460 / 2) + (landscapeNameXOffset * (canvasWidth / 460));
+        text1PosY = (290 * 0.75) + (landscapeNameYOffset * (canvasHeight / 290)) + (signatureLowerOffset * (canvasHeight / 290));
+      } else {
+        text1PosX = 360 / 2;
+        text1PosY = (571 * 0.75) + (signatureLowerOffset * (canvasHeight / 571));
+      }
+    }
+
+    function adjustFontSizeForName(name, maxWidth) {
+      textFont('Dancing Script');
+      let fontSize = text1FontSize;
+      textSize(fontSize);
+      let nameWidth = textWidth(name);
+      while (nameWidth < maxWidth && fontSize < 100) {
+        fontSize += 1;
+        textSize(fontSize);
+        nameWidth = textWidth(name);
+      }
+      while (nameWidth > maxWidth && fontSize > 10) {
+        fontSize -= 1;
+        textSize(fontSize);
+        nameWidth = textWidth(name);
+      }
+      if (isLandscape) {
+        fontSize *= landscapeNameScaleFactor;
+      }
+      return fontSize;
+    }
+
+    function isTouchOverPhoto(x, y) {
+      if (!photoLoaded || !photoImg) return false;
+      let scaledHeight = photoImg.height * scaleVal;
+      let scaledWidth = scaledHeight * photoAspectRatio;
+      let padding = 1.5;
+      let paddedWidth = scaledWidth * padding;
+      let paddedHeight = scaledHeight * padding;
+      let photoX = xPos + canvasWidth / 2 - paddedWidth / 2;
+      let photoY = yPos + canvasHeight / 2 - paddedHeight / 2;
+      return x >= photoX && x <= photoX + paddedWidth && y >= photoY && y <= photoY + paddedHeight;
+    }
+
+    function isTouchOverCanvas(x, y) {
+      const canvasContainer = document.getElementById('canvas-container');
+      const rect = canvasContainer.getBoundingClientRect();
+      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    }
+
+    function mousePressed() {
+      if (photoLoaded && isTouchOverPhoto(mouseX, mouseY)) {
+        isDraggingPhoto = true;
+        photoDragStartX = mouseX - xPos;
+        photoDragStartY = mouseY - yPos;
+      }
+    }
+
+    function mouseReleased() {
+      isDraggingPhoto = false;
+    }
+
+    function mouseDragged() {
+      if (isDraggingPhoto) {
+        xPos = mouseX - photoDragStartX;
+        yPos = mouseY - photoDragStartY;
+        const xPosSlider = document.getElementById('xPos');
+        const yPosSlider = document.getElementById('yPos');
+        if (xPosSlider) xPosSlider.value = xPos;
+        if (yPosSlider) yPosSlider.value = yPos;
+      }
+    }
+
+    function touchStarted() {
+      if (touches.length === 1) {
+        let touchX = touches[0].x;
+        let touchY = touches[0].y;
+        if (isTouchOverCanvas(touchX, touchY) && photoLoaded && isTouchOverPhoto(touchX, touchY)) {
+          isDraggingPhoto = true;
+          photoDragStartX = touchX - xPos;
+          photoDragStartY = touchY - yPos;
+          return false;
+        }
+      } else if (touches.length === 2) {
+        let touch1X = touches[0].x;
+        let touch1Y = touches[0].y;
+        let touch2X = touches[1].x;
+        let touch2Y = touches[1].y;
+        let midX = (touch1X + touch2X) / 2;
+        let midY = (touch1Y + touch2Y) / 2;
+        if (isTouchOverCanvas(midX, midY) && photoLoaded && isTouchOverPhoto(midX, midY)) {
+          isPinching = true;
+          isDraggingPhoto = false;
+          initialPinchDistance = dist(touch1X, touch1Y, touch2X, touch2Y);
+          initialScale = scaleVal;
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function touchMoved() {
+      if (touches.length === 1 && isDraggingPhoto) {
+        xPos = touches[0].x - photoDragStartX;
+        yPos = touches[0].y - photoDragStartY;
+        const xPosSlider = document.getElementById('xPos');
+        const yPosSlider = document.getElementById('yPos');
+        if (xPosSlider) xPosSlider.value = xPos;
+        if (yPosSlider) yPosSlider.value = yPos;
+        hasDownloaded = false;
+        return false;
+      } else if (touches.length === 2 && isPinching) {
+        let currentDistance = dist(touches[0].x, touches[0].y, touches[1].x, touches[1].y);
+        let scaleFactor = currentDistance / initialPinchDistance;
+        scaleVal = constrain(initialScale * scaleFactor, 0.1, 2);
+        const scaleSlider = document.getElementById('scale');
+        if (scaleSlider) scaleSlider.value = scaleVal;
+        hasDownloaded = false;
+        return false;
+      }
+      return true;
+    }
+
+    function touchEnded() {
+      isDraggingPhoto = false;
+      isPinching = false;
+      return true;
+    }
+
+    function draw() {
+      clear();
+      if (templateLoaded && templateImg) {
+        background(255);
+        if (photoLoaded && photoImg && !photoInFront) {
+          push();
+          translate(xPos + canvasWidth / 2, yPos + canvasHeight / 2);
+          rotate(radians(rotationVal));
+          scale(scaleVal);
+          imageMode(CENTER);
+          let scaledHeight = photoImg.height * scaleVal;
+          let scaledWidth = scaledHeight * photoAspectRatio;
+          image(photoImg, 0, 0, scaledWidth, scaledHeight);
+          pop();
+        }
+        image(templateImg, 0, 0, canvasWidth, canvasHeight);
+        if (photoLoaded && photoImg && photoInFront) {
+          push();
+          translate(xPos + canvasWidth / 2, yPos + canvasHeight / 2);
+          rotate(radians(rotationVal));
+          scale(scaleVal);
+          imageMode(CENTER);
+          let scaledHeight = photoImg.height * scaleVal;
+          let scaledWidth = scaledHeight * photoAspectRatio;
+          image(photoImg, 0, 0, scaledWidth, scaledHeight);
+          pop();
+        }
+        if (photoLoaded && text1) {
+          push();
+          if (hasDownloaded) {
+            translate(xPos + canvasWidth / 2, yPos + canvasHeight / 2);
+            rotate(radians(rotationVal));
+            scale(scaleVal);
+            translate(relativeNameX, relativeNameY);
+            scale(relativeNameScale);
+            translate(text1PosX - (canvasWidth / 2), text1PosY - (canvasHeight / 2));
+          } else {
+            translate(nameXPos + canvasWidth / 2, nameYPos + canvasHeight / 2);
+            scale(nameScaleVal);
+            translate(text1PosX - (canvasWidth / 2), text1PosY - (canvasHeight / 2));
+          }
+          fill(nameColor);
+          textAlign(CENTER, TOP);
+          textFont('Dancing Script');
+          let adjustedFontSize = adjustFontSizeForName(text1, maxNameWidth);
+          textSize(adjustedFontSize);
+          text(text1, 0, 0);
+          pop();
+        }
+      } else {
+        background(0, 0, 0, 0);
+      }
+    }
+
+    function validateFile(file, type) {
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const maxSizeMB = 5;
+      if (!allowedTypes.includes(file.type)) {
+        return `Please upload a ${type.toLowerCase()} in JPEG, PNG, or GIF format.`;
+      }
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        return `The ${type.toLowerCase()} file exceeds the ${maxSizeMB}MB size limit. Please upload a smaller file.`;
+      }
+      return null;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const templateUpload = document.getElementById('templateUpload');
+      const photoUpload = document.getElementById('photoUpload');
+      const text1Input = document.getElementById('text1');
+      const xPosSlider = document.getElementById('xPos');
+      const yPosSlider = document.getElementById('yPos');
+      const scaleSlider = document.getElementById('scale');
+      const rotationSlider = document.getElementById('rotation');
+      const nameXPosSlider = document.getElementById('nameXPos');
+      const nameYPosSlider = document.getElementById('nameYPos');
+      const nameScaleSlider = document.getElementById('nameScale');
+      const colorBlackButton = document.getElementById('colorBlack');
+      const colorWhiteButton = document.getElementById('colorWhite');
+      const sendBackButton = document.getElementById('sendBack');
+      const bringFrontButton = document.getElementById('bringFront');
+      const downloadButton = document.getElementById('download');
+
+      if (templateUpload) {
+        templateUpload.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const validationError = validateFile(file, 'Template');
+            if (validationError) {
+              alert(validationError);
+              templateUpload.value = '';
+              return;
+            }
+            const url = URL.createObjectURL(file);
+            loadingMessage.style.display = 'block';
+            loadingMessage.textContent = 'Loading template...';
+            try {
+              loadImage(
+                url,
+                (img) => {
+                  isLandscape = img.width > img.height;
+                  if (isLandscape) {
+                    canvasWidth = 460 * 1.2;
+                    canvasHeight = 290 * 1.2;
+                    document.querySelector('.main-container').classList.add('landscape');
+                  } else {
+                    canvasWidth = 360;
+                    canvasHeight = 571;
+                    document.querySelector('.main-container').classList.remove('landscape');
+                  }
+                  updateCanvasSize();
+                  templateImg = img;
+                  originalTemplateWidth = img.width;
+                  originalTemplateHeight = img.height;
+                  templateLoaded = true;
+                  photoInFront = true; // Ensure new template is under photo
+                  loadingMessage.style.display = 'none';
+                  document.getElementById('canvas-container').style.backgroundImage = 'none';
+                  URL.revokeObjectURL(url);
+                  templateUpload.value = '';
+                },
+                (err) => {
+                  loadingMessage.textContent = 'Failed to load template';
+                  setTimeout(() => {
+                    loadingMessage.style.display = 'none';
+                  }, 3000);
+                  alert('Error loading template image: ' + (err.message || 'Unknown error') + '. Please try a different image.');
+                  URL.revokeObjectURL(url);
+                  templateUpload.value = '';
+                }
+              );
+            } catch (err) {
+              loadingMessage.textContent = 'Failed to load template';
+              setTimeout(() => {
+                loadingMessage.style.display = 'none';
+              }, 3000);
+              alert('Exception while loading template: ' + (err.message || 'Unknown error') + '. Please try a different image.');
+              URL.revokeObjectURL(url);
+              templateUpload.value = '';
+            }
+          }
+        });
+      }
+
+      if (photoUpload) {
+        photoUpload.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const validationError = validateFile(file, 'Photo');
+            if (validationError) {
+              alert(validationError);
+              photoUpload.value = '';
+              return;
+            }
+            const url = URL.createObjectURL(file);
+            loadingMessage.style.display = 'block';
+            loadingMessage.textContent = 'Loading photo...';
+            try {
+              loadImage(
+                url,
+                (img) => {
+                  photoAspectRatio = img.width / img.height;
+                  photoImg = img;
+                  if (img.width > canvasWidth * 2 || img.height > canvasHeight * 2) {
+                    scaleVal = 0.5;
+                  } else {
+                    scaleVal = 1.25;
+                  }
+                  if (scaleSlider) scaleSlider.value = scaleVal;
+                  photoLoaded = true;
+                  loadingMessage.style.display = 'none';
+                  updateCanvasSize();
+                  URL.revokeObjectURL(url);
+                  photoUpload.value = '';
+                },
+                (err) => {
+                  loadingMessage.textContent = 'Failed to load photo';
+                  setTimeout(() => {
+                    loadingMessage.style.display = 'none';
+                  }, 3000);
+                  alert('Error loading photo image: ' + (err.message || 'Unknown error') + '. Please try a different image.');
+                  URL.revokeObjectURL(url);
+                  photoUpload.value = '';
+                }
+              );
+            } catch (err) {
+              loadingMessage.textContent = 'Failed to load photo';
+              setTimeout(() => {
+                loadingMessage.style.display = 'none';
+              }, 3000);
+              alert('Exception while loading photo: ' + (err.message || 'Unknown error') + '. Please try a different image.');
+              URL.revokeObjectURL(url);
+              photoUpload.value = '';
+            }
+          }
+        });
+      }
+
+      if (text1Input) {
+        text1Input.addEventListener('input', (e) => {
+          text1 = e.target.value;
+          hasDownloaded = false;
+        });
+      }
+
+      if (xPosSlider) {
+        xPosSlider.addEventListener('input', (e) => {
+          xPos = parseInt(e.target.value);
+          hasDownloaded = false;
+        });
+      }
+
+      if (yPosSlider) {
+        yPosSlider.addEventListener('input', (e) => {
+          yPos = parseInt(e.target.value);
+          hasDownloaded = false;
+        });
+      }
+
+      if (scaleSlider) {
+        scaleSlider.addEventListener('input', (e) => {
+          scaleVal = parseFloat(e.target.value);
+          hasDownloaded = false;
+        });
+      }
+
+      if (rotationSlider) {
+        rotationSlider.addEventListener('input', (e) => {
+          rotationVal = parseFloat(e.target.value);
+          hasDownloaded = false;
+        });
+      }
+
+      if (nameXPosSlider) {
+        nameXPosSlider.addEventListener('input', (e) => {
+          nameXPos = parseInt(e.target.value);
+          hasDownloaded = false;
+        });
+      }
+
+      if (nameYPosSlider) {
+        nameYPosSlider.addEventListener('input', (e) => {
+          nameYPos = parseInt(e.target.value);
+          hasDownloaded = false;
+        });
+      }
+
+      if (nameScaleSlider) {
+        nameScaleSlider.addEventListener('input', (e) => {
+          nameScaleVal = parseFloat(e.target.value);
+          hasDownloaded = false;
+        });
+      }
+
+      if (colorBlackButton) {
+        colorBlackButton.addEventListener('click', () => {
+          nameColor = 0;
+          document.querySelectorAll('.color-button').forEach(btn => btn.classList.remove('selected'));
+          colorBlackButton.classList.add('selected');
+          hasDownloaded = false;
+        });
+      }
+
+      if (colorWhiteButton) {
+        colorWhiteButton.addEventListener('click', () => {
+          nameColor = 255;
+          document.querySelectorAll('.color-button').forEach(btn => btn.classList.remove('selected'));
+          colorWhiteButton.classList.add('selected');
+          hasDownloaded = false;
+        });
+      }
+
+      if (sendBackButton) {
+        sendBackButton.addEventListener('click', () => {
+          photoInFront = false;
+        });
+      }
+
+      if (bringFrontButton) {
+        bringFrontButton.addEventListener('click', () => {
+          photoInFront = true;
+        });
+      }
+
+      if (downloadButton) {
+        downloadButton.addEventListener('click', () => {
+          if (templateLoaded && photoLoaded && templateImg && photoImg) {
+            const resolutionMultiplier = 2;
+            let highResWidth = originalTemplateWidth * resolutionMultiplier;
+            let highResHeight = originalTemplateHeight * resolutionMultiplier;
+            let highResCanvas = createGraphics(highResWidth, highResHeight);
+            highResCanvas.background(255);
+            if (!photoInFront) {
+              highResCanvas.push();
+              highResCanvas.translate((xPos + canvasWidth / 2) * (highResWidth / canvasWidth), (yPos + canvasHeight / 2) * (highResHeight / canvasHeight));
+              highResCanvas.rotate(radians(rotationVal));
+              highResCanvas.scale(scaleVal);
+              highResCanvas.imageMode(CENTER);
+              let scaledHeight = photoImg.height * scaleVal;
+              let scaledWidth = scaledHeight * photoAspectRatio;
+              highResCanvas.image(photoImg, 0, 0, scaledWidth * (highResWidth / canvasWidth), scaledHeight * (highResHeight / canvasHeight));
+              highResCanvas.pop();
+            }
+            highResCanvas.image(templateImg, 0, 0, highResWidth, highResHeight);
+            if (photoInFront) {
+              highResCanvas.push();
+              highResCanvas.translate((xPos + canvasWidth / 2) * (highResWidth / canvasWidth), (yPos + canvasHeight / 2) * (highResHeight / canvasHeight));
+              highResCanvas.rotate(radians(rotationVal));
+              highResCanvas.scale(scaleVal);
+              highResCanvas.imageMode(CENTER);
+              let scaledHeight = photoImg.height * scaleVal;
+              let scaledWidth = scaledHeight * photoAspectRatio;
+              highResCanvas.image(photoImg, 0, 0, scaledWidth * (highResWidth / canvasWidth), scaledHeight * (highResHeight / canvasHeight));
+              highResCanvas.pop();
+            }
+            if (text1) {
+              highResCanvas.push();
+              if (hasDownloaded) {
+                highResCanvas.translate((xPos + canvasWidth / 2) * (highResWidth / canvasWidth), (yPos + canvasHeight / 2) * (highResHeight / canvasHeight));
+                highResCanvas.rotate(radians(rotationVal));
+                highResCanvas.scale(scaleVal);
+                highResCanvas.translate(relativeNameX * (highResWidth / canvasWidth), relativeNameY * (highResHeight / canvasHeight));
+                highResCanvas.scale(relativeNameScale);
+                highResCanvas.translate((text1PosX - (canvasWidth / 2)) * (highResWidth / canvasWidth), (text1PosY - (canvasHeight / 2)) * (highResHeight / canvasHeight));
+              } else {
+                highResCanvas.translate((nameXPos + canvasWidth / 2) * (highResWidth / canvasWidth), (nameYPos + canvasHeight / 2) * (highResHeight / canvasHeight));
+                highResCanvas.scale(nameScaleVal);
+                highResCanvas.translate((text1PosX - (canvasWidth / 2)) * (highResWidth / canvasWidth), (text1PosY - (canvasHeight / 2)) * (highResHeight / canvasHeight));
+              }
+              highResCanvas.fill(nameColor);
+              highResCanvas.textAlign(CENTER, TOP);
+              highResCanvas.textFont('Dancing Script');
+              let adjustedFontSize = adjustFontSizeForName(text1, maxNameWidth);
+              highResCanvas.textSize(adjustedFontSize * (highResWidth / canvasWidth));
+              highResCanvas.text(text1, 0, 0);
+              highResCanvas.pop();
+              if (!hasDownloaded) {
+                let theta = radians(rotationVal);
+                let cosTheta = Math.cos(theta);
+                let sinTheta = Math.sin(theta);
+                let dx = nameXPos - xPos;
+                let dy = nameYPos - yPos;
+                relativeNameX = (dx * cosTheta + dy * sinTheta) / scaleVal;
+                relativeNameY = (-dx * sinTheta + dy * cosTheta) / scaleVal;
+                relativeNameScale = nameScaleVal / scaleVal;
+                if (nameXPosSlider) nameXPosSlider.value = nameXPos;
+                if (nameYPosSlider) nameYPosSlider.value = nameYPos;
+                if (nameScaleSlider) nameScaleSlider.value = nameScaleVal;
+              }
+            }
+            highResCanvas.canvas.toBlob((blob) => {
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = text1 ? `${text1.replace(/[^a-zA-Z0-9]/g, '')}-FunBadge.png` : 'FunBadge.png';
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              URL.revokeObjectURL(url);
+              hasDownloaded = true;
+            }, 'image/png');
+          } else {
+            alert('Please upload both a template and a photo.');
+          }
+        });
+      }
+
+      window.addEventListener('resize', () => {
+        updateCanvasSize();
+      });
+    });
+  </script>
+</body>
+</html>
