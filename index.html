@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FunBadge</title>
+  <title>FBI Badge Creator</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
   <style>
@@ -220,6 +220,19 @@
       margin-bottom: 10px;
       max-width: 772.98px;
     }
+    .video-tutorial {
+      margin: 20px 0;
+      text-align: center;
+      max-width: 902.9px;
+      width: 100%;
+      position: relative;
+    }
+    .video-tutorial iframe {
+      max-width: 100%;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
     @media (max-width: 740px) {
       .main-container {
         align-items: center;
@@ -316,6 +329,12 @@
       .disclaimer {
         font-size: 12px;
       }
+      .video-tutorial iframe {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        aspect-ratio: 16 / 9;
+      }
     }
     @media (max-width: 772.98px) and (min-width: 741px) {
       .top-buttons {
@@ -328,7 +347,7 @@
 <body>
   <div class="main-container">
     <div class="disclaimer">
-      This is a fun badge creator tool for personal use only. We do not store your data.
+      This is a fictional graphic tool for fun only. No data is stored.
     </div>
     <div class="top-buttons">
       <a href="https://www.etsy.com/uk/listing/1802562586/personalised-fbi-agent-7-printable" target="_blank" class="button">BUY TEMPLATE</a>
@@ -401,6 +420,9 @@
         </div>
       </div>
     </div>
+    <div class="video-tutorial">
+      <iframe width="720" height="405" src="https://www.youtube.com/embed/TYuQPwPnKFQ?si=PMUZCAW51T8y-ypT&vq=hd720" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
   </div>
   <script>
     let templateImg, photoImg;
@@ -423,14 +445,12 @@
     let initialScale = 0;
     const loadingMessage = document.getElementById('loading-message');
     let canvas;
-
     let text1PosX = 360 / 2, text1PosY = (571 * 0.75) + 11, text1FontSize = 30;
     const maxNameWidth = 300;
     const landscapeNameScaleFactor = 0.8;
     const landscapeNameYOffset = -29;
     const landscapeNameXOffset = 29;
     const signatureLowerOffset = 11;
-
     function setup() {
       canvas = createCanvas(canvasWidth, canvasHeight);
       canvas.parent('canvas-container');
@@ -441,7 +461,6 @@
       textFont('Dancing Script');
       pixelDensity(2); // Ensure high-quality rendering
     }
-
     function updateCanvasSize() {
       document.getElementById('canvas-container').style.width = `${canvasWidth}px`;
       document.getElementById('canvas-container').style.height = `${canvasHeight}px`;
@@ -459,7 +478,6 @@
       updateSliderRanges();
       updateTextPositions();
     }
-
     function updateSliderRanges() {
       const xMax = canvasWidth / 2;
       const yMax = canvasHeight / 2;
@@ -476,7 +494,6 @@
       if (nameYPosSlider) nameYPosSlider.setAttribute('min', -yMax);
       if (nameYPosSlider) nameYPosSlider.setAttribute('max', yMax);
     }
-
     function updateTextPositions() {
       if (isLandscape) {
         text1PosX = (460 / 2) + (landscapeNameXOffset * (canvasWidth / 460));
@@ -486,7 +503,6 @@
         text1PosY = (571 * 0.75) + (signatureLowerOffset * (canvasHeight / 571));
       }
     }
-
     function adjustFontSizeForName(name, maxWidth) {
       textFont('Dancing Script');
       let fontSize = text1FontSize;
@@ -507,7 +523,6 @@
       }
       return fontSize;
     }
-
     function isTouchOverPhoto(x, y) {
       if (!photoLoaded || !photoImg) return false;
       let scaledHeight = photoImg.height * scaleVal;
@@ -519,13 +534,11 @@
       let photoY = yPos + canvasHeight / 2 - paddedHeight / 2;
       return x >= photoX && x <= photoX + paddedWidth && y >= photoY && y <= photoY + paddedHeight;
     }
-
     function isTouchOverCanvas(x, y) {
       const canvasContainer = document.getElementById('canvas-container');
       const rect = canvasContainer.getBoundingClientRect();
       return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
     }
-
     function mousePressed() {
       if (photoLoaded && isTouchOverPhoto(mouseX, mouseY)) {
         isDraggingPhoto = true;
@@ -533,11 +546,9 @@
         photoDragStartY = mouseY - yPos;
       }
     }
-
     function mouseReleased() {
       isDraggingPhoto = false;
     }
-
     function mouseDragged() {
       if (isDraggingPhoto) {
         xPos = mouseX - photoDragStartX;
@@ -548,7 +559,6 @@
         if (yPosSlider) yPosSlider.value = yPos;
       }
     }
-
     function touchStarted() {
       if (touches.length === 1) {
         let touchX = touches[0].x;
@@ -576,7 +586,6 @@
       }
       return true;
     }
-
     function touchMoved() {
       if (touches.length === 1 && isDraggingPhoto) {
         xPos = touches[0].x - photoDragStartX;
@@ -598,13 +607,11 @@
       }
       return true;
     }
-
     function touchEnded() {
       isDraggingPhoto = false;
       isPinching = false;
       return true;
     }
-
     function draw() {
       clear();
       if (templateLoaded && templateImg) {
@@ -658,7 +665,6 @@
         background(0, 0, 0, 0);
       }
     }
-
     function validateFile(file, type) {
       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
       const maxSizeMB = 5;
@@ -670,7 +676,6 @@
       }
       return null;
     }
-
     document.addEventListener('DOMContentLoaded', () => {
       const templateUpload = document.getElementById('templateUpload');
       const photoUpload = document.getElementById('photoUpload');
@@ -687,7 +692,6 @@
       const sendBackButton = document.getElementById('sendBack');
       const bringFrontButton = document.getElementById('bringFront');
       const downloadButton = document.getElementById('download');
-
       if (templateUpload) {
         templateUpload.addEventListener('change', (e) => {
           const file = e.target.files[0];
@@ -720,7 +724,7 @@
                   originalTemplateWidth = img.width;
                   originalTemplateHeight = img.height;
                   templateLoaded = true;
-                  photoInFront = true; // Ensure new template is under photo
+                  photoInFront = true;
                   loadingMessage.style.display = 'none';
                   document.getElementById('canvas-container').style.backgroundImage = 'none';
                   URL.revokeObjectURL(url);
@@ -748,7 +752,6 @@
           }
         });
       }
-
       if (photoUpload) {
         photoUpload.addEventListener('change', (e) => {
           const file = e.target.files[0];
@@ -802,63 +805,54 @@
           }
         });
       }
-
       if (text1Input) {
         text1Input.addEventListener('input', (e) => {
           text1 = e.target.value;
           hasDownloaded = false;
         });
       }
-
       if (xPosSlider) {
         xPosSlider.addEventListener('input', (e) => {
           xPos = parseInt(e.target.value);
           hasDownloaded = false;
         });
       }
-
       if (yPosSlider) {
         yPosSlider.addEventListener('input', (e) => {
           yPos = parseInt(e.target.value);
           hasDownloaded = false;
         });
       }
-
       if (scaleSlider) {
         scaleSlider.addEventListener('input', (e) => {
           scaleVal = parseFloat(e.target.value);
           hasDownloaded = false;
         });
       }
-
       if (rotationSlider) {
         rotationSlider.addEventListener('input', (e) => {
           rotationVal = parseFloat(e.target.value);
           hasDownloaded = false;
         });
       }
-
       if (nameXPosSlider) {
         nameXPosSlider.addEventListener('input', (e) => {
           nameXPos = parseInt(e.target.value);
           hasDownloaded = false;
         });
       }
-
       if (nameYPosSlider) {
         nameYPosSlider.addEventListener('input', (e) => {
           nameYPos = parseInt(e.target.value);
           hasDownloaded = false;
         });
       }
-
       if (nameScaleSlider) {
         nameScaleSlider.addEventListener('input', (e) => {
           nameScaleVal = parseFloat(e.target.value);
           hasDownloaded = false;
         });
       }
-
       if (colorBlackButton) {
         colorBlackButton.addEventListener('click', () => {
           nameColor = 0;
@@ -867,7 +861,6 @@
           hasDownloaded = false;
         });
       }
-
       if (colorWhiteButton) {
         colorWhiteButton.addEventListener('click', () => {
           nameColor = 255;
@@ -876,19 +869,16 @@
           hasDownloaded = false;
         });
       }
-
       if (sendBackButton) {
         sendBackButton.addEventListener('click', () => {
           photoInFront = false;
         });
       }
-
       if (bringFrontButton) {
         bringFrontButton.addEventListener('click', () => {
           photoInFront = true;
         });
       }
-
       if (downloadButton) {
         downloadButton.addEventListener('click', () => {
           if (templateLoaded && photoLoaded && templateImg && photoImg) {
@@ -959,7 +949,7 @@
               const url = URL.createObjectURL(blob);
               const link = document.createElement('a');
               link.href = url;
-              link.download = text1 ? `${text1.replace(/[^a-zA-Z0-9]/g, '')}-FunBadge.png` : 'FunBadge.png';
+              link.download = text1 ? `${text1.replace(/[^a-zA-Z0-9]/g, '')}-FBIBadge.png` : 'FBIBadge.png';
               document.body.appendChild(link);
               link.click();
               document.body.removeChild(link);
@@ -971,7 +961,6 @@
           }
         });
       }
-
       window.addEventListener('resize', () => {
         updateCanvasSize();
       });
